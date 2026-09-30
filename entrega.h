@@ -1,10 +1,11 @@
 #pragma once //Es lo mismo que hacer #ifndef #def #endif
 
-typedef enum {LOW = 0,MEDIUM = 2,HIGH = 3} prioridad;
+typedef enum {LOW = 0,MEDIUM = 1,HIGH = 2} prioridad;
 
-typedef struct{     //Por ahorita solo ordenamos por vip, pero podemos agregarle mas
-    prioridad priority;   //En caso de necesitar ordenar por vip y otra cosa
-}Entrega;           //Tambien pueden agregar otros atributos (entrega,restaurante)
+typedef struct{             //Por ahorita solo ordenamos por vip, pero podemos agregarle mas
+    int id;
+    prioridad priority;     //En caso de necesitar ordenar por vip y otra cosa
+}Entrega;                   //Tambien pueden agregar otros atributos (entrega,restaurante)
 
 typedef struct{
     int id;//id unica de empleado
