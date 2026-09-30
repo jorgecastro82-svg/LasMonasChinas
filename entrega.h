@@ -9,3 +9,5 @@ typedef struct{
     Entrega arr[4];//Maximo numero de entregas que puede cargar un empleado al mismo tiempo
 }Empleado;//Empleado provisional, se necesitara introducir coordenadas o algo para
 //poder identificar al individio en un espacio del mapa
+
+int entrega_cmp(Entrega const*,Entrega const*);
