@@ -34,7 +34,7 @@ void merge(Entrega *arr,Entrega *aux,const Index index, int (*cmp)(Entrega const
     while(i <= mid) aux[k++] = arr[i++];
     while(j <= index.right) aux[k++] = arr[j++];
 
-    for(k = index.left; k <= index.right;k++) arr[k] = aux[k];
+    for(k = index.left;+ k <= index.right;k++) arr[k] = aux[k];
 
 }
 
