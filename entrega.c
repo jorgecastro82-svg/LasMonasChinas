@@ -9,7 +9,7 @@ void imprimirEntregas(Entrega const *arr){
     }
     printf("\n");
     for (int i=0;i<MAXENTREGA;i++){
-        printf(BLUE"|"BLANCO"   %-3d",arr[i].id);
+        printf(BLUE"|"CYAN"   %-3d",arr[i].id);
         printf(BLUE" |"BLANCO);
     }
     printf("\n");
