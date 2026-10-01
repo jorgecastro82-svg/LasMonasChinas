@@ -20,6 +20,6 @@ typedef struct{
 
 int entrega_cmp(Entrega const*,Entrega const*);
 
-void imprimirEntregas(Entrega *);
+void imprimirEntregas(Entrega const *arr);
 char *tipo_prio(int);
 Entrega entregaInit(prioridad p);

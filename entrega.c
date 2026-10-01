@@ -5,38 +5,38 @@ int entrega_cmp(Entrega const *a,Entrega const *b){ //
 }
 void imprimirEntregas(Entrega const *arr){
     for (int i=0;i<MAXENTREGA*MAXENTREGA;i++){
-        printf(AZUL"-"BLANCO);
+        printf(BLUE"-"BLANCO);
     }
     for (int i=0;i<MAXENTREGA;i++){
-        printf(AZUL"|"BLANCO"%d",arr[i].id);
-        printf(AZUL" |"BLANCO);
+        printf(BLUE"|"BLANCO"%d",arr[i].id);
+        printf(BLUE" |"BLANCO);
     }
     printf("\n");
     for (int i=0;i<MAXENTREGA*MAXENTREGA;i++){
-        printf(AZUL"-"BLANCO);
+        printf(BLUE"-"BLANCO);
     }
     for (int i=0;i<MAXENTREGA;i++){
-        printf(AZUL"|"BLANCO"%s",tipo_prio(arr[i].priority));
-        printf(AZUL" |"BLANCO);
+        printf(BLUE"|"BLANCO"%s",tipo_prio(arr[i].priority));
+        printf(BLUE" |"BLANCO);
     }
-    char *tipo_prio(int n){
-        switch(n){
-            case 0:
-                return "LOW"
-            break;
-            case 1:
-                return "MEDIUM"
-            break;
-            case 2:
-                return "HIGH"
-            break;
-            default:
-                return "-----"
-            break;
-        
-        }
+}
+char *tipo_prio(int n){
+    switch(n){
+        case 0:
+            return "LOW";
+        break;
+        case 1:
+            return "MEDIUM";
+        break;
+        case 2:
+            return "HIGH";
+        break;
+        default:
+            return "-----";
+        break;
+    
     }
-
+}
 Entrega entregaInit(prioridad p){
     static int id = 0;
     return (Entrega){id++,p};
