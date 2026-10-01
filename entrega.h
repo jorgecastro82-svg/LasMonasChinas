@@ -14,3 +14,5 @@ typedef struct{
 //poder identificar al individio en un espacio del mapa
 
 int entrega_cmp(Entrega const*,Entrega const*);
+
+Entrega entregaInit(prioridad p);
