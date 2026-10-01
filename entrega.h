@@ -4,7 +4,7 @@
 #define ROJO "\033[0;31m"
 #define  BLANCO "\033[0m"
 #define BLUE    "\x1b[34m"
-
+#define CYAN    "\033[96m"
 typedef enum {LOW = 0,MEDIUM = 1,HIGH = 2} prioridad;
 
 typedef struct{             //Por ahorita solo ordenamos por vip, pero podemos agregarle mas
