@@ -4,7 +4,7 @@ int entrega_cmp(Entrega const *a,Entrega const *b){ //
     return a->priority - b->priority;
 }
 void imprimirEntregas(Entrega const *arr){
-    for (int i=0;i<MAXENTREGA*MAXENTREGA;i++){
+    for (int i=0;i<MAXENTREGA*9;i++){
         printf(BLUE"-"BLANCO);
     }
     printf("\n");
@@ -13,7 +13,7 @@ void imprimirEntregas(Entrega const *arr){
         printf(BLUE" |"BLANCO);
     }
     printf("\n");
-    for (int i=0;i<MAXENTREGA*MAXENTREGA;i++){
+    for (int i=0;i<MAXENTREGA*9;i++){
         printf(BLUE"-"BLANCO);
     }
     printf("\n");
