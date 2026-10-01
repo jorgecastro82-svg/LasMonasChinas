@@ -9,10 +9,10 @@ int main(){
 
     Entrega entregas[10]; //10 para ejemplo pero 4 max por repartidor
     for(int i = 0;i < 10;++i) entregas[i] = entregaInit(rand() % 3);
-    //Imprimir con funcion bien epicarda
+    imprimirEntregas(entregas);
     printf("\n"); //salto linea
     mergesort(entregas,10,entrega_cmp);
-    //Imprimir con funcion bien epicarda
+    imprimirEntregas(entregas);
 
     return 0;
 }
