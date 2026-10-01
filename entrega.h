@@ -1,6 +1,6 @@
 #pragma once //Es lo mismo que hacer #ifndef #def #endif
 #include <stdlib.h>
-#define  MAXENTREGA 5
+#define  MAXENTREGA 4
 #define ROJO "\033[0;31m"
 #define  BLANCO "\033[0m"
 #define BLUE    "\x1b[34m"
