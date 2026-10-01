@@ -36,4 +36,8 @@ void imprimirEntregas(Entrega const *arr){
         
         }
     }
+
+Entrega entregaInit(prioridad p){
+    static int id = 0;
+    return (Entrega){id++,p};
 }
