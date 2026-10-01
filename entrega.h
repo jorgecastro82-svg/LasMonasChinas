@@ -6,9 +6,12 @@
 #define BLUE    "\x1b[34m"
 typedef enum {LOW = 0,MEDIUM = 2,HIGH = 3} prioridad;
 
-typedef struct{     //Por ahorita solo ordenamos por vip, pero podemos agregarle mas
-    prioridad priority;   //En caso de necesitar ordenar por vip y otra cosa
-}Entrega;           //Tambien pueden agregar otros atributos (entrega,restaurante)
+typedef enum {LOW = 0,MEDIUM = 1,HIGH = 2} prioridad;
+
+typedef struct{             //Por ahorita solo ordenamos por vip, pero podemos agregarle mas
+    int id;
+    prioridad priority;     //En caso de necesitar ordenar por vip y otra cosa
+}Entrega;                   //Tambien pueden agregar otros atributos (entrega,restaurante)
 
 typedef struct{
     int id;//id unica de empleado
@@ -20,3 +23,4 @@ int entrega_cmp(Entrega const*,Entrega const*);
 
 void imprimirEntregas(Entrega *);
 char *tipo_prio(int);
+Entrega entregaInit(prioridad p);
