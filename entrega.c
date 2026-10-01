@@ -9,7 +9,7 @@ void imprimirEntregas(Entrega const *arr){
     }
     printf("\n");
     for (int i=0;i<MAXENTREGA;i++){
-        printf(BLUE"|"BLANCO"%d",arr[i].id);
+        printf(BLUE"|"BLANCO"   %-3d",arr[i].id);
         printf(BLUE" |"BLANCO);
     }
     printf("\n");
@@ -18,8 +18,8 @@ void imprimirEntregas(Entrega const *arr){
     }
     printf("\n");
     for (int i=0;i<MAXENTREGA;i++){
-        printf(BLUE"|"BLANCO"%s",tipo_prio(arr[i].priority));
-        printf(BLUE" |"BLANCO);
+        printf(BLUE"|"BLANCO"%-7s",tipo_prio(arr[i].priority));
+        printf(BLUE"|"BLANCO);
     }
 }
 char *tipo_prio(int n){
