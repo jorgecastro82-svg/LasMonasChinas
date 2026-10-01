@@ -16,6 +16,7 @@ void imprimirEntregas(Entrega const *arr){
     for (int i=0;i<MAXENTREGA*MAXENTREGA;i++){
         printf(BLUE"-"BLANCO);
     }
+    printf("\n");
     for (int i=0;i<MAXENTREGA;i++){
         printf(BLUE"|"BLANCO"%s",tipo_prio(arr[i].priority));
         printf(BLUE" |"BLANCO);
