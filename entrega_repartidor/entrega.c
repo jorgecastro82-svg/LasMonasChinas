@@ -1,4 +1,5 @@
 #include "entrega.h"
+#include <stdio.h>
 
 int entrega_cmp(Entrega const *a,Entrega const *b){ //
     return a->priority - b->priority;
@@ -41,5 +42,5 @@ char *tipo_prio(int n){
 }
 Entrega entregaInit(prioridad p){
     static int id = 0;
-    return (Entrega){id++,p};
+    return (Entrega){.id=id++, .priority=p};
 }

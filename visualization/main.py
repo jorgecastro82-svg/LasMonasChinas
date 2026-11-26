@@ -1,12 +1,25 @@
+import argparse
+import json
+from pathlib import Path
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 import numpy as np
 
 
+parser = argparse.ArgumentParser(description="Mapa de rutas de Tijuana")
+parser.add_argument("--plan", type=Path, help="JSON generado por el planificador")
+parser.add_argument("--guardar", type=Path, help="Guardar la figura como imagen")
+args = parser.parse_args()
+interactivo = bool(args.plan and not args.guardar)
+if interactivo:
+    from simulacion import Simulacion, TINTA, RUTA, PENDIENTE
+root = Path(__file__).resolve().parents[1]
+
 #Load original OSM data
-nodes = pd.read_csv("../map_data/nodes.csv")
-edges = pd.read_csv("../map_data/edges.csv")
+nodes = pd.read_csv(root / "map_data/nodes.csv")
+edges = pd.read_csv(root / "map_data/edges.csv", low_memory=False)
 
 
 #Map each node ID to its coordinates (longitude, latitude)
@@ -29,32 +42,36 @@ segments = [
 ]
 
 
-#Replace with actual Dijkstra output
-#Each tuple: (src, dest, way_id)
-path_edges = [
-	(int(row.src), int(row.dest), int(row.way_id))
-	for row in pd.read_csv("../dijkstra_output.csv").itertuples(index=False)
-]
+if args.plan:
+    with args.plan.open(encoding="utf-8") as archivo:
+        plan = json.load(archivo)
+    path_edges = [edge for tramo in plan["tramos"] for edge in tramo["aristas"]]
+else:
+    path_edges = [
+        (int(row.src), int(row.dest), int(row.way_id))
+        for row in pd.read_csv(root / "dijkstra_output.csv").itertuples(index=False)
+    ]
 
 
 #Retrieve the exact OSM geometry for each path edge
 path_segments = []
 
-for src, dest, way_id in path_edges:
-	edge = edges[
-		(edges["u"] == src) &
-		(edges["v"] == dest) &
-		(edges["id"] == way_id)
-	]
-
-	if edge.empty:
-		raise ValueError(f"Edge not found: {src} -> {dest}, way {way_id}")
-
-	path_segments.append(parse_linestring(edge.iloc[0]["geometry"]))
+# Index the original geometries once; a long circuit can reuse the same street.
+indices = edges.groupby(["u", "v", "id"], sort=False).indices
+filas_ruta = []
+for clave in map(tuple, path_edges):
+    filas = indices.get(clave)
+    if filas is None:
+        raise ValueError(f"Edge not found: {clave}")
+    fila = filas[0]
+    filas_ruta.append(fila)
+    path_segments.append(segments[fila])
 
 
 # Obtain path vertices for start and destination markers
-path = [path_edges[0][0]] + [edge[1] for edge in path_edges]
+path = ([path_edges[0][0]] + [edge[1] for edge in path_edges]) if path_edges else []
+if args.plan and not path:
+    path = [plan["deposito"]]
 
 path_lon = [coords.loc[node, "lon"] for node in path]
 path_lat = [coords.loc[node, "lat"] for node in path]
@@ -79,49 +96,54 @@ ax.add_collection(LineCollection(
 # Shortest path visualization
 ax.add_collection(LineCollection(
 	path_segments,
-	colors="red",
+	colors=RUTA if interactivo else "red",
 	linewidths=2.5,
-	label="Camino"
+	label="Ruta optimizada" if args.plan else "Camino"
 ))
 
 
 # Start and destination markers
-ax.scatter(
-	path_lon[0],
-	path_lat[0],
-	color="green",
-	s=80,
-	label="Inicio",
-	zorder=3
-)
-
-ax.scatter(
-	path_lon[-1],
-	path_lat[-1],
-	color="blue",
-	s=80,
-	label="Destino",
-	zorder=3
-)
+if path:
+    ax.scatter(path_lon[0], path_lat[0], color=TINTA if interactivo else "green", s=90,
+               marker="D" if interactivo else "o",
+               label="Depósito" if args.plan else "Inicio", zorder=3)
+if interactivo:
+    ax.annotate("Depósito", (path_lon[0], path_lat[0]), xytext=(-9, 9),
+                textcoords="offset points", ha="right", fontsize=9, color=TINTA,
+                bbox=dict(facecolor="white", edgecolor="none", alpha=.9, pad=1), zorder=5)
+if args.plan:
+    etiquetas = {}
+    for numero, tramo in enumerate(plan["tramos"][:-1], start=1):
+        texto = f"{numero}. Entrega {tramo['entrega_id']}"
+        etiquetas.setdefault(tramo["destino"], []).append(texto)
+    # Separar las etiquetas de sur a norte para leer paradas muy próximas.
+    ubicaciones = sorted(etiquetas, key=lambda nodo: coords.at[nodo, "lat"])
+    for fila, nodo in enumerate(ubicaciones):
+        lon, lat = coords.loc[nodo]
+        ax.scatter(lon, lat, facecolors=PENDIENTE if interactivo else "none",
+                   edgecolors="white" if interactivo else "blue", s=83 if interactivo else 100, zorder=4)
+        offset = 18 * (fila - (len(ubicaciones) - 1) / 2)
+        ax.annotate("\n".join(etiquetas[nodo]), (lon, lat), xytext=(24, offset),
+                    textcoords="offset points", va="center", color="navy", zorder=5,
+                    bbox=dict(facecolor="white", edgecolor="none", alpha=0.9, pad=1.5),
+                    arrowprops=dict(arrowstyle="-", color="navy", lw=0.7))
+elif path:
+    ax.scatter(path_lon[-1], path_lat[-1], color="blue", s=80, label="Destino", zorder=3)
 
 
 # Display road information
-print("\nRoad information:")
+if not interactivo:
+    print("\nRoad information:")
 
-for src, dest, way_id in path_edges:
-	edge = edges[
-		(edges["u"] == src) &
-		(edges["v"] == dest) &
-		(edges["id"] == way_id)
-	].iloc[0]
-
-	print(f"\n{src} -> {dest}")
-	print(f"Way ID: {way_id}")
-	print(f"Name: {edge['name']}")
-	print(f"Highway: {edge['highway']}")
-	print(f"Max speed: {edge['maxspeed']}")
-	print(f"Surface: {edge['surface']}")
-	print(f"Length: {edge['length']} m")
+    for (src, dest, way_id), fila in zip(path_edges, filas_ruta):
+        edge = edges.iloc[fila]
+        print(f"\n{src} -> {dest}")
+        print(f"Way ID: {way_id}")
+        print(f"Name: {edge['name']}")
+        print(f"Highway: {edge['highway']}")
+        print(f"Max speed: {edge['maxspeed']}")
+        print(f"Surface: {edge['surface']}")
+        print(f"Length: {edge['length']} m")
 
 
 # Configure plot
@@ -129,9 +151,15 @@ ax.autoscale()
 ax.margins(0.02)
 ax.set_aspect(aspect_ratio)
 
-ax.set_title("Trayectoria Repartidor")
+if not interactivo:
+    ax.set_title("Trayectoria Repartidor")
 ax.set_xlabel("Longitud")
 ax.set_ylabel("Latitud")
 ax.legend()
 
-plt.show()
+if args.guardar:
+    fig.savefig(args.guardar, dpi=140, bbox_inches="tight")
+else:
+    if interactivo:
+        simulacion = Simulacion(fig, ax, plan, path_segments, coords)
+    plt.show()

@@ -1,5 +1,5 @@
 #pragma once 
-#include "entrega.h"
+#include "entrega_repartidor/entrega.h"
 #include <stdlib.h>
 
 //Pila y estructuras necesarias para el mergesort

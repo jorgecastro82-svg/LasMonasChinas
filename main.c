@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <math.h>
+#include <string.h>
+#include "planificador.h"
 
 #include "graph/dijkstra.h"
 
@@ -18,7 +20,13 @@ int write_route(_Dijkstra_edge *fixed, uint64_t source, uint64_t destination);
 
 
 int main(int argc, char *argv[]){
-    //#if(0)
+    if(argc >= 2 && strcmp(argv[1], "--plan") == 0)
+        return ejecutar_plan(argc, argv);
+    if(argc != 5){
+        fprintf(stderr, "Uso: %s lat1 lon1 lat2 lon2\n"
+                "  o: %s --plan deposito HH:MM entregas.csv [--penalizar]\n", argv[0], argv[0]);
+        return 1;
+    }
 	double src_lat = strtod(argv[1], NULL);
 	double src_lon = strtod(argv[2], NULL);
 	double dest_lat = strtod(argv[3], NULL);
@@ -184,12 +192,38 @@ int write_route(_Dijkstra_edge *fixed, uint64_t source, uint64_t destination){
 		return 0;
 	}
 
+    _Dijkstra_edge *route = NULL;
+    int route_size = ruta_inversa(fixed, source, destination, &route);
+    if(route_size < 0){
+        fclose(file);
+        return 0;
+    }
+
+	// Write route forwards
+	for(int i = route_size - 1; i >= 0; i--){
+		fprintf(file, "%" PRIu64 ",%" PRIu64 ",%" PRIu64 "\n",
+			route[i].src_id,
+			route[i].dest_id,
+			route[i].edge_id);
+	}
+
+	free(route);
+	fclose(file);
+
+	printf("Route written to dijkstra_output.csv\n");
+	printf("Number of edges: %d\n", route_size);
+
+	return 1;
+}
+
+int ruta_inversa(_Dijkstra_edge *fixed, uint64_t source, uint64_t destination, _Dijkstra_edge **out){
+    *out = NULL;
+    if(source == destination) return 0;
 	int count = len(fixed);
 
 	_Dijkstra_edge *route = malloc(count * sizeof(_Dijkstra_edge));
 	if(!route){
-		fclose(file);
-		return 0;
+		return -1;
 	}
 
 	int route_size = 0;
@@ -211,24 +245,14 @@ int write_route(_Dijkstra_edge *fixed, uint64_t source, uint64_t destination){
 		if(!found){
 			printf("Could not reconstruct route.\n");
 			free(route);
-			fclose(file);
-			return 0;
+			return -1;
 		}
 	}
 
-	// Write route forwards
-	for(int i = route_size - 1; i >= 0; i--){
-		fprintf(file, "%" PRIu64 ",%" PRIu64 ",%" PRIu64 "\n",
-			route[i].src_id,
-			route[i].dest_id,
-			route[i].edge_id);
-	}
-
-	free(route);
-	fclose(file);
-
-	printf("Route written to dijkstra_output.csv\n");
-	printf("Number of edges: %d\n", route_size);
-
-	return 1;
+    if(current != source){
+        free(route);
+        return -1;
+    }
+    *out = route;
+    return route_size;
 }

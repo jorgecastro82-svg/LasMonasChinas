@@ -1,5 +1,6 @@
 #pragma once //Es lo mismo que hacer #ifndef #def #endif
 #include <stdlib.h>
+#include <stdint.h>
 #define  MAXENTREGA 4
 #define ROJO "\033[0;31m"
 #define  BLANCO "\033[0m"
@@ -10,6 +11,8 @@ typedef enum {LOW = 0,MEDIUM = 1,HIGH = 2} prioridad;
 typedef struct{             //Por ahorita solo ordenamos por vip, pero podemos agregarle mas
     int id;
     prioridad priority;     //En caso de necesitar ordenar por vip y otra cosa
+    uint64_t nodo;
+    int apertura, cierre; // Minutos desde medianoche
 }Entrega;                   //Tambien pueden agregar otros atributos (entrega,restaurante)
 
 typedef struct{

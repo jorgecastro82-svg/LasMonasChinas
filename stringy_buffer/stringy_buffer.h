@@ -1,8 +1,9 @@
 #pragma once
 #include <stdlib.h>
+#include <stdint.h>
 
 typedef struct{
-    int size;
+    _Alignas(uint64_t) int size;
     int capacity;
     int element_size;
 }Meta;
@@ -33,6 +34,6 @@ int len(void *list);
     } \
  \
     LIST[meta->size++] = ELEMENT; \
-}while(0) \
+}while(0)
 
 //idk

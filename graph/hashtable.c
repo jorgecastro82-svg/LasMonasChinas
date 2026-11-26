@@ -25,7 +25,8 @@ void insert_key(HashTable *h,uint64_t key){
     while(h->table[index].vertex != EMPTY){
         //Check that the current index doesnt have the key
         if(h->table[index].vertex == key) return;
-        index = (base + (++k * (k + 1)) / 2) % h->capacity;
+        ++k;
+        index = (base + (k * (k + 1)) / 2) % h->capacity;
     } 
 
     h->table[index].vertex = key;
@@ -43,7 +44,8 @@ void insert_key_val_pair(HashTable *h,uint64_t key,LinkedList value){
     while(h->table[index].vertex != EMPTY){
         //Check that the current index doesnt have the key
         if(h->table[index].vertex == key) return;
-        index = (base + (++k * (k + 1)) / 2) % h->capacity;
+        ++k;
+        index = (base + (k * (k + 1)) / 2) % h->capacity;
     } 
 
     h->table[index].vertex = key;
@@ -57,7 +59,8 @@ Pair *get_val_hash_table(HashTable *h,uint64_t key){
     uint64_t k = 0; //For quadratic sounding
     while(h->table[index].vertex != EMPTY){
         if(h->table[index].vertex == key) return &(h->table[index]);
-        index = (base + (++k * (k + 1)) / 2) % h->capacity;
+        ++k;
+        index = (base + (k * (k + 1)) / 2) % h->capacity;
     } 
     //case not found
     return NULL;
